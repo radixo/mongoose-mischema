@@ -1,0 +1,28 @@
+{
+  "name": "mongoose-mischema",
+  "version": "1.0.0",
+  "description": "The way to get Multiple Inheritance with mongoose Schemas",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/radixo/mongoose-mischema.git"
+  },
+  "keywords": [
+    "multiple",
+    "inheritance",
+    "mongoose",
+    "schema"
+  ],
+  "author": "Walter Neto <wneto@alephbit.com.br> (http://www.alephbit.com.br)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/radixo/mongoose-mischema/issues"
+  },
+  "homepage": "https://github.com/radixo/mongoose-mischema#readme",
+  "dependencies": {
+    "mongoose": "^4.7.9"
+  }
+}
