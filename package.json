@@ -1,6 +1,6 @@
 {
   "name": "mongoose-mischema",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The way to get Multiple Inheritance with mongoose Schemas",
   "main": "index.js",
   "scripts": {
