@@ -47,7 +47,7 @@ var tpPerson = new MISchema('tpPerson', [tpLog], {
 var Person = mischema.model('Person', tpPerson.Schema);
 var ChuckNorris = new Person({
     name: "Chuck Norris",
-    birthDate: Date.now() + 1, // He was born tomorrow :O
+    birthDate: Date.now() + 1000*60*60*24, // He was born tomorrow :O
     archived: true,
 });
 ChuckNorris.save(function(err) {
@@ -112,7 +112,7 @@ var tpEmployee = new MISchema('tpEmployee', [tpOccupation, tpPerson]);
 var Employee = mischema.model('Employee', tpEmployee.Schema);
 var ChuckNorris = new Employee({
         name: "Chuck Norris",
-        birthDate: Date.now() + 1, // He was born tomorrow :O
+        birthDate: Date.now() + 1000*60*60*24, // He was born tomorrow :O
         addresses: [{ street: 'Maniacs Street', street2: '-1',
             postalCode: 'XXX' }]
 });
