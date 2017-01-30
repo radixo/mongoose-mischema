@@ -1,7 +1,7 @@
 # mongoose-mischema
 
 [![npm](https://img.shields.io/npm/v/npm.svg?style=flat-square)](https://www.npmjs.com/package/mongoose-mischema)
-[![Github Releases](https://img.shields.io/github/downloads/atom/atom/latest/total.svg?style=flat-square)](https://github.com/radixo/mongoose-mischema)
+[![Github All Releases](https://img.shields.io/github/downloads/radixo/mongoose-mischema/total.svg?style=flat-square)](https://github.com/radixo/mongoose-mischema)
 
 ## Synopsys
 
