@@ -85,12 +85,13 @@ function scopeAdd(scope, objStruct)
 			objKeys = Object.keys(obj);
 
 			for (var drItem of dirties[task.tpName]) {
-				if (schema[drItem[0]].constructor === Array)
+				if (schema[drItem[0]].constructor === Array) {
 					schema[drItem[0]].push(scope[drItem[1]]
 					    .getMongooseSchema());
-				else
+				} else {
 					schema[drItem[0]] = scope[drItem[1]]
 					    .objStruct;
+				}
 			}
 		} else {
 			obj = task.obj;
@@ -111,10 +112,9 @@ function scopeAdd(scope, objStruct)
 			scope[task.tpName] = {
 				objStruct: schema,
 				amso: task.opts.amso,
-				getMongooseSchema: () => {
-					return new Schema(
-					    scope[task.tpName].objStruct,
-					    scope[task.tpName].amso);
+				getMongooseSchema: function() {
+					return new Schema(this.objStruct,
+					    this.amso);
 				},
 			};
 
