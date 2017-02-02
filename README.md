@@ -44,8 +44,11 @@ var tpPerson = new MISchema('tpPerson', [tpLog], {
     birthDate: Date,
 });
 
-// We provide a copy of mongoose.model, and you need to use the [type].Schema to get mongoose Schema
-var Person = mischema.model('Person', tpPerson.Schema);
+// Get mongoose Schema
+var personSchema = tpPerson.Schema;
+
+// We provide a copy of mongoose.model
+var Person = mischema.model('Person', personSchema);
 var ChuckNorris = new Person({
     name: "Chuck Norris",
     birthDate: Date.now() + 1000*60*60*24, // He was born tomorrow :O
@@ -55,19 +58,18 @@ ChuckNorris.save(function(err) {
     if (err) return handleErr(err);
 });
 /*
- * MongoDB shell: db.People.find().pretty()
- *
+ * > db.people.find().pretty()
  * {
- *         "_id" : ObjectId("588f2843d698af74e7129e06"),
- *         "name" : "Chuck Norris",
- *         "birthDate" : ISODate("2017-01-30T11:49:23.322Z"),
- *         "_kinds" : [
- *                 "tpLog",
- *                 "tpPerson"
- *         ],
- *         "archived" : true,
- *         "__v" : 0
- * }
+ * 	"_id" : ObjectId("589349eb0b26cad4cf2ba238"),
+ * 	"name" : "Chuck Norris",
+ * 	"birthDate" : ISODate("2017-02-03T15:02:03.866Z"),
+ * 	"_kind" : "tpPerson",
+ * 	"_kinds" : [
+ * 		"tpLog"
+ * 	],
+ * 	"archived" : true,
+ * 	"__v" : 0
+ * } 
  */
 ```
 
@@ -110,46 +112,66 @@ var tpPerson = new MISchema('tpPerson', {
 
 var tpEmployee = new MISchema('tpEmployee', [tpOccupation, tpPerson]);
 
-var Employee = mischema.model('Employee', tpEmployee.Schema);
+// Create mongoose Schema
+var employeeSchema = tpEmployee.Schema;
+
+// We have an helper to set required, awesome for big different projects that
+// uses the same base model
+employeeSchema.setRequired(['name', 'birthDate', 'subdoc.attr0'], true);
+
+// Create model
+var Employee = mischema.model('Employee', employeeSchema);
 var ChuckNorris = new Employee({
-        name: "Chuck Norris",
-        birthDate: Date.now() + 1000*60*60*24, // He was born tomorrow :O
-        addresses: [{ street: 'Maniacs Street', street2: '-1',
-            postalCode: 'XXX' }]
+	name: "Chuck Norris",
+	birthDate: Date.now() + 1, // He was born tomorrow :O
+	addresses: [{ street: 'Maniacs Street', street2: '-1',
+	    postalCode: 'XXX' }]
 });
 ChuckNorris.save(function(err) {
-    if (err) return handleErr(err);
+    if (err) return console.log(err.message);
+}).then(function() {
+    ChuckNorris.subdoc.attr0 = 'value';
+    ChuckNorris.save(function(err) {
+        if (err) return console.log(err.message);
+	console.log('success now');
+    })
 });
 /*
- * MongoDB shell: db.employees.find().pretty()
+ * Console:
+ * Employee validation failed
+ * sccess now
  *
+ * Mongo Shell:
+ * > db.employees.find().pretty()
  * {
- *	"_id" : ObjectId("588f44dc5cf2bd7bb8231f2b"),
- *	"name" : "Chuck Norris",
- *	"birthDate" : ISODate("2017-01-30T13:51:24.388Z"),
- *	"_kinds" : [
- *		"tpOccupation",
- *		"tpPerson",
- *		"tpEmployee"
- *	],
- *	"addresses" : [
- *		{
- *			"street" : "Maniacs Street",
- *			"street2" : "-1",
- *			"postalCode" : "XXX",
- *			"_kinds" : [
- *				"tpAddress"
- *			]
- *		}
- *	],
- *	"__v" : 0
+ * 	"_id" : ObjectId("5893514dd20b54d607fe58b9"),
+ * 	"name" : "Chuck Norris",
+ * 	"birthDate" : ISODate("2017-02-02T15:33:33.772Z"),
+ * 	"_kind" : "tpEmployee",
+ * 	"_kinds" : [
+ * 		"tpOccupation",
+ * 		"tpPerson"
+ * 	],
+ * 	"addresses" : [
+ * 		{
+ * 			"street" : "Maniacs Street",
+ * 			"street2" : "-1",
+ * 			"postalCode" : "XXX",
+ * 			"_kind" : "tpAddress",
+ * 			"_kinds" : [ ]
+ * 		}
+ * 	],
+ * 	"subdoc" : {
+ * 		"attr0" : "value"
+ * 	},
+ * 	"__v" : 0
  * }
  */
 ```
 
 ## Conclusion
 
-With mongoose-schema you have a powerfull tool to deal with your schemas, take care to use multiple inheritence only with orthogonal situations, that's all for now folks! Enjoy!
+With mongoose-mischema you have a powerfull tool to deal with your schemas, take care to use multiple inheritence only with orthogonal situations, that's all for now folks! Enjoy!
 
 ## Author
 Walter Neto (@wneto)

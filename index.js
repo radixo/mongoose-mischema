@@ -3,7 +3,8 @@
 /*
  * Load dependencies
  */
-const mongoose = require('mongoose'),
+const util = require('util'),
+    mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 function schemaAdd(task, schema, oKey, oVal, scope, tasks, schemas, dirties,
@@ -133,7 +134,7 @@ function mergeSchemas(sch0, sch1, usedKeys, deconflict)
 
 	// Looping through new schema (sch1)
 	for (let key of keys) {
-		if (key === '_kinds')
+		if (key === '_kinds' || key === '_kind')
 			continue;
 
 		let val = sch1[key];
@@ -174,9 +175,13 @@ function genMISchema(objs, implementeds)
 		if (!(objStruct instanceof MISchema))
 			continue;
 
+		var topImplemented = {};
+		topImplemented[objStruct.tpName] = true;
+
 		mergeSchemas(schema, scopeAdd(scope, objStruct), 
 		    usedKeys, objStruct.opts.deconflict);
 		mergeImplementeds(implementeds, objStruct.implementeds);
+		mergeImplementeds(implementeds, topImplemented);
 	}
 
 	return schema;
@@ -191,6 +196,27 @@ function genKinds(implementeds)
 		rArr.push(key);
 
 	return { type: Array, 'default': rArr };
+}
+
+function extendMongooseSchema(ms)
+{
+	
+	// setRequired Extention
+	ms.setRequired = function(paths, val) {
+		if (val === undefined) val = true; // Default val to true
+
+		if (paths.constructor !== Array)
+			paths = [paths];
+
+		paths.forEach(function (pathName) {
+			let path = this.path(pathName);
+
+			if (!path)
+				throw new Error(util.format(
+				    'Path "%s" not found.', pathName));
+			path.required(val);
+		}, this);
+	};
 }
 
 /*
@@ -230,8 +256,8 @@ function MISchema()
 		    this.implementeds), obj);
 	else
 		this.obj = obj;
-	this.implementeds[this.tpName] = true;
 	this.obj._kinds = genKinds(this.implementeds);
+	this.obj._kind = { type: String, 'default': this.tpName };
 	this.opts = opts || {};
 	this.mongooseSchema = undefined;
 
@@ -242,9 +268,11 @@ function MISchema()
 	// Getters
 	Object.defineProperty(this, 'Schema', {
 		get: function() {
-			if (!this.mongooseSchema)
+			if (!this.mongooseSchema) {
 				this.mongooseSchema = new Schema(this.obj,
 				    this.opts.mso);
+				extendMongooseSchema(this.mongooseSchema);
+			}
 
 			return this.mongooseSchema;
 		},
@@ -256,26 +284,34 @@ function MISchema()
  */
 mongoose.plugin(function MISchemaPlugin(schema, options)
 {
-	var ofKind = function(arr, kind) {
+	var ofKind = function(inst, obj, kind) {
 		var kindName;
+		var arr, attr;
 
 		if (kind instanceof MISchema)
 			kindName = kind.tpName;
 		else
 			kindName = kind;
 
-		return (arr.indexOf(kindName) != -1);
+		if (inst) {
+			arr = obj._kinds;
+			attr = obj._kind;
+		} else {
+			arr = obj.schema.path('_kinds').options['default'];
+			attr = obj.schema.path('_kind').options['default'];
+		}
+
+		return (attr == kind || arr.indexOf(kindName) != -1);
 	}
 
 	// Instance method
 	schema.methods.ofKind = function(kind) {
-		return ofKind(this._kinds, kind);
+		return ofKind(true, this, kind);
 	};
 
 	// Static method
 	schema.statics.ofKind = function(kind) {
-		return ofKind(this.schema.path('_kinds').options['default'],
-		    kind);
+		return ofKind(false, this, kind);
 	}
 });
 
