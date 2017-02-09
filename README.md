@@ -1,3 +1,7 @@
+![Deprecated](https://rawgit.com/radixo/mongoose-mischema/master/stopping.svg)
+
+We are **depracating** this package. But you can use my [mongoose fork](https://github.com/radixo/mongoose) or give me your support to have my [pull request](https://github.com/Automattic/mongoose/pull/4969) accepted!
+
 # mongoose-mischema
 
 Downloads:
@@ -174,5 +178,5 @@ ChuckNorris.save(function(err) {
 With mongoose-mischema you have a powerfull tool to deal with your schemas, take care to use multiple inheritence only with orthogonal situations, that's all for now folks! Enjoy!
 
 ## Author
-Walter Neto (@wneto)
+Walter Neto (@radixo)
 
